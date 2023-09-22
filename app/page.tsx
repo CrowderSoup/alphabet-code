@@ -12,8 +12,10 @@ export default function Home() {
     characters.forEach((character) => {
       const code = letterCode(character);
 
-      if (code !== -1) {
-        setEncodedWord(`${encodedWord} ${code}`);
+      if (code !== -1 && encodedWord.length === 0) {
+        setEncodedWord(`${code}`);
+      } else {
+        setEncodedWord(`${encodedWord}-${code}`);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,6 +119,7 @@ export default function Home() {
         <form className="flex flex-col mx-auto space-y-2 items-center">
           <div>
             <input
+              className="rounded-full p-2 text-black"
               value={word}
               onChange={(e) => {
                 e.preventDefault();
