@@ -2,24 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+const DEFAULT_ENCODING = "Type something below...";
+
 export default function Home() {
   const [word, setWord] = useState("");
-  const [encodedWord, setEncodedWord] = useState("");
-
-  useEffect(() => {
-    const characters = word.split("");
-
-    characters.forEach((character) => {
-      const code = letterCode(character);
-
-      if (code !== -1 && encodedWord.length === 0) {
-        setEncodedWord(`${code}`);
-      } else {
-        setEncodedWord(`${encodedWord}-${code}`);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [word]);
+  const [encodedWord, setEncodedWord] = useState(DEFAULT_ENCODING);
 
   function letterCode(char: string): number {
     let response: number;
@@ -110,9 +97,33 @@ export default function Home() {
     return response;
   }
 
+  function clear() {
+    setWord("");
+    setEncodedWord(DEFAULT_ENCODING);
+  }
+
+  useEffect(() => {
+    const characters = word.split("");
+
+    if (characters.length <= 0) {
+      setEncodedWord(DEFAULT_ENCODING);
+      return;
+    }
+
+    const codes = characters
+      .map((char) => {
+        return letterCode(char);
+      })
+      .filter((code) => {
+        return code !== -1;
+      });
+
+    setEncodedWord(codes.join("-"));
+  }, [word]);
+
   return (
     <main className="flex min-h-screen flex-col mx-auto space-y-4 items-center">
-      <div className="m-10">
+      <div className="m-10 text-center">
         <p className="text-4xl font-bold">{encodedWord}&nbsp;</p>
       </div>
       <div>
@@ -125,21 +136,32 @@ export default function Home() {
                 e.preventDefault();
 
                 setWord(e.target.value);
+                // setEncodedWord(getCode(e.target.value));
               }}
               type="text"
             />
           </div>
-          <div>
+          <div className="flex flex-row mx-auto space-x-2">
+            <button
+              className="rounded-full p-2 bg-slate-400"
+              onClick={(e) => {
+                e.preventDefault();
+
+                // Reverse the word and code
+                setWord(word.split("").reverse().join(""));
+              }}
+            >
+              Reverse <i className="fa-solid fa-rotate"></i>
+            </button>
             <button
               className="rounded-full p-2 bg-red-300"
               onClick={(e) => {
                 e.preventDefault();
 
-                setWord("");
-                setEncodedWord("");
+                clear();
               }}
             >
-              Clear Word
+              Clear Word <i className="fa-solid fa-eraser"></i>
             </button>
           </div>
         </form>
